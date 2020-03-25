@@ -2,7 +2,7 @@ const connection = require('../database/connection');
 
 
 module.exports = {
-    async index(request, response){
+    async index(request, response) {
         const {page = 1} = request.query;
 
         const [count] = await connection('incidents').count();
@@ -12,19 +12,19 @@ module.exports = {
             .limit(5)
             .offset((page - 1) * 5)
             .select([
-                    'incidents.*',
-                    'ongs.name',
-                    'ongs.email',
-                    'ongs.whatsapp',
-                    'ongs.city',
-                    'ongs.uf'])
+                'incidents.*',
+                'ongs.name',
+                'ongs.email',
+                'ongs.whatsapp',
+                'ongs.city',
+                'ongs.uf']);
 
         response.header('X-Total-Count', count['count(*)']);
 
         return response.json(incidents)
     },
 
-    async create(request, response){
+    async create(request, response) {
         const {title, description, value} = request.body;
         const ong_id = request.headers.authorization;
 
@@ -35,11 +35,11 @@ module.exports = {
             ong_id,
         });
 
-        return response.json({ id });
+        return response.json({id});
     },
 
-    async delete(request, response){
-        const { id } = request.params;
+    async delete(request, response) {
+        const {id} = request.params;
         const ong_id = request.headers.authorization;
 
         const incident = await connection('incidents')
@@ -51,7 +51,7 @@ module.exports = {
             return response.status(404).json({error: 'Incident not found'});
         }
 
-        if (incident.ong_id != ong_id) {
+        if (incident.ong_id !== ong_id) {
             return response.status(401).json({error: 'Operation not permitted.'});
         }
 
@@ -60,4 +60,4 @@ module.exports = {
         return response.status(204).send();
 
     }
-}
+};
